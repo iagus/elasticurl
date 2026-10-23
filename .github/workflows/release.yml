@@ -3,6 +3,12 @@ name: Release
 on:
   push:
     tags: ["v*"]
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: "Existing tag to (re)build the release for, e.g. v0.1.0"
+        required: true
+        type: string
 
 permissions:
   contents: write
@@ -24,8 +30,13 @@ jobs:
           - target: aarch64-apple-darwin
             os: macos-14
     runs-on: ${{ matrix.os }}
+    env:
+      # On tag pushes this is the tag; on manual dispatch it's the tag input.
+      TAG: ${{ github.ref_type == 'tag' && github.ref_name || inputs.tag }}
     steps:
       - uses: actions/checkout@v4
+        with:
+          ref: ${{ env.TAG }}
 
       - uses: dtolnay/rust-toolchain@stable
         with:
@@ -44,7 +55,7 @@ jobs:
         shell: bash
         env:
           TARGET: ${{ matrix.target }}
-          REF: ${{ github.ref_name }}
+          REF: ${{ env.TAG }}
         run: |
           set -euo pipefail
           PKG="elasticurl-${REF#v}-${TARGET}"
@@ -59,4 +70,5 @@ jobs:
       - name: Attach to GitHub release
         uses: softprops/action-gh-release@v2
         with:
+          tag_name: ${{ env.TAG }}
           files: dist/*.tar.gz*
