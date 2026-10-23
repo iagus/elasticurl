@@ -60,7 +60,8 @@ async fn query_params_are_url_encoded() {
         .and(query_param("q", "status code:404"))
         .and(query_param("size", "5"))
         .respond_with(
-            ResponseTemplate::new(200).set_body_json(json!({"hits": {"total": {"value": 0}, "hits": []}})),
+            ResponseTemplate::new(200)
+                .set_body_json(json!({"hits": {"total": {"value": 0}, "hits": []}})),
         )
         .mount(&server)
         .await;
@@ -81,14 +82,18 @@ async fn post_sends_json_body() {
         .and(path("/logs/_search"))
         .and(body_json(json!({"query": {"match_all": {}}, "size": 3})))
         .respond_with(
-            ResponseTemplate::new(200).set_body_json(json!({"hits": {"total": {"value": 0}, "hits": []}})),
+            ResponseTemplate::new(200)
+                .set_body_json(json!({"hits": {"total": {"value": 0}, "hits": []}})),
         )
         .mount(&server)
         .await;
 
     let client = Client::new(&server.uri(), None, false);
     let value = client
-        .post_json("/logs/_search", &json!({"query": {"match_all": {}}, "size": 3}))
+        .post_json(
+            "/logs/_search",
+            &json!({"query": {"match_all": {}}, "size": 3}),
+        )
         .unwrap();
     assert!(value.pointer("/hits").is_some());
 }

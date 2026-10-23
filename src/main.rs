@@ -1,6 +1,6 @@
 use clap::Parser;
-use elasticurl::client::Client;
 use elasticurl::cli::Cli;
+use elasticurl::client::Client;
 use elasticurl::commands;
 
 fn main() {

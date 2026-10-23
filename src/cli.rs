@@ -126,17 +126,25 @@ mod tests {
 
     #[test]
     fn parses_global_flags_after_subcommand() {
-        let cli =
-            Cli::try_parse_from(["elasticurl", "indices", "-o", "json", "-H", "http://es:9200"])
-                .unwrap();
+        let cli = Cli::try_parse_from([
+            "elasticurl",
+            "indices",
+            "-o",
+            "json",
+            "-H",
+            "http://es:9200",
+        ])
+        .unwrap();
         assert_eq!(cli.host, "http://es:9200");
         assert!(matches!(cli.output, OutputFormat::Json));
     }
 
     #[test]
     fn query_conflict_between_q_and_file() {
-        assert!(Cli::try_parse_from(["elasticurl", "query", "logs", "-q", "a:b", "-f", "b.json"])
-            .is_err());
+        assert!(
+            Cli::try_parse_from(["elasticurl", "query", "logs", "-q", "a:b", "-f", "b.json"])
+                .is_err()
+        );
     }
 
     #[test]

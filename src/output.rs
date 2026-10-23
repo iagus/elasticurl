@@ -131,11 +131,14 @@ pub fn render_hits(value: &Value) -> String {
                 .map(|hit| {
                     ["_index", "_id", "_score", "_source"]
                         .iter()
-                        .map(|k| hit.get(*k).map(|v| scalar(v)).unwrap_or_default())
+                        .map(|k| hit.get(*k).map(scalar).unwrap_or_default())
                         .collect()
                 })
                 .collect();
-            out.push_str(&render_table(&["_index", "_id", "_score", "_source"], &rows));
+            out.push_str(&render_table(
+                &["_index", "_id", "_score", "_source"],
+                &rows,
+            ));
         }
         _ => out.push_str("no hits\n"),
     }
@@ -156,7 +159,10 @@ mod tests {
                 vec!["user.name".into(), "keyword".into()],
             ],
         );
-        assert_eq!(out, "name       type\nmsg        text\nuser.name  keyword\n");
+        assert_eq!(
+            out,
+            "name       type\nmsg        text\nuser.name  keyword\n"
+        );
     }
 
     #[test]

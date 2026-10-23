@@ -1,5 +1,6 @@
 # elasticurl
 
+[![CI](https://github.com/iagus/elasticurl/actions/workflows/ci.yml/badge.svg)](https://github.com/iagus/elasticurl/actions/workflows/ci.yml)
 [![License: MIT](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
 
 A tiny, fast CLI for everyday Elasticsearch operations — no more memorizing
@@ -75,10 +76,18 @@ logs    2    1.0     {"msg":"world"}
 
 ## Installation
 
+### Prebuilt binaries
+
+Download a ready-made binary for Linux (x86_64/aarch64, statically linked with
+musl) or macOS (Intel/Apple silicon) from
+[Releases](https://github.com/iagus/elasticurl/releases) — each archive also
+bundles the man pages under `man/`.
+
+### From source
+
 Requires a [Rust toolchain](https://rustup.rs/) (1.85+):
 
 ```sh
-# from a local checkout
 git clone https://github.com/iagus/elasticurl && cd elasticurl
 cargo install --path .            # installs elasticurl into ~/.cargo/bin
 
@@ -131,6 +140,11 @@ src/
 
 The release profile is tuned for binary size (`opt-level = "z"`, LTO,
 `codegen-units = 1`, `panic = "abort"`, `strip`) → ~1.4 MB stripped binary.
+
+CI runs `cargo fmt`, `cargo clippy` and `cargo test` on every push and PR.
+Pushing a `v*` tag builds release binaries for Linux (static musl) and macOS
+(both architectures) and attaches them, along with the man pages, to the
+GitHub release.
 
 ## License
 
