@@ -2,7 +2,7 @@
 name = "elasticurl"
 version = "0.1.0"
 edition = "2021"
-description = "CLI to simplify common requests to a local Elasticsearch API"
+description = "A tiny, fast Rust CLI for everyday Elasticsearch operations — list indices, check cluster health, inspect mappings and index sizes, list aliases and query indices without memorizing endpoint paths. Single static binary, --help, man pages and shell completions included."
 license = "MIT"
 repository = "https://github.com/iagus/elasticurl"
 keywords = ["elasticsearch", "cli"]
