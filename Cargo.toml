@@ -4,6 +4,7 @@ version = "0.1.0"
 edition = "2021"
 description = "CLI to simplify common requests to a local Elasticsearch API"
 license = "MIT"
+repository = "https://github.com/iagus/elasticurl"
 keywords = ["elasticsearch", "cli"]
 categories = ["command-line-utilities"]
 
