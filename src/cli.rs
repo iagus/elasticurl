@@ -22,7 +22,11 @@ pub enum OutputFormat {
 /// All commands print a table by default; use `-o json` for machine-readable
 /// output and `--pretty` to format it.
 #[derive(Parser, Debug)]
-#[command(name = "elasticurl", version)]
+#[command(
+    name = "elasticurl",
+    version,
+    after_help = "Full documentation is also available via man pages: 'man elasticurl-<command>' (e.g. 'man elasticurl-query'). Pages are generated into man/ at build time; the Homebrew formula installs them automatically."
+)]
 pub struct Cli {
     /// Elasticsearch base URL
     #[arg(
@@ -85,6 +89,35 @@ pub enum Command {
     Aliases,
 
     /// Search an index with a Lucene query (-q) or a JSON DSL body (-f)
+    ///
+    /// With neither -q nor -f the search is a match_all (default size 10).
+    ///
+    /// EXAMPLES
+    ///
+    /// Lucene query-string search, default table output:
+    ///
+    ///   $ elasticurl query logs -q 'status:404' -n 3
+    ///   total: 2
+    ///   _index  _id  _score  _source
+    ///   logs    Ax1   1.5     {"msg":"GET /health returned 404"}
+    ///   logs    Bx2   1.0     {"msg":"GET /favicon returned 404"}
+    ///
+    /// JSON Query DSL body from a file (-n overrides the body's "size"):
+    ///
+    ///   $ cat query.json
+    ///   {"query": {"match": {"msg": "hello"}}, "size": 3}
+    ///   $ elasticurl query logs -f query.json
+    ///   total: 12
+    ///   _index  _id  _score  _source
+    ///   logs    Cx3   2.1     {"msg":"hello world"}
+    ///
+    /// DSL body from stdin, raw JSON output piped to jq:
+    ///
+    ///   $ cat query.json | elasticurl query logs -f - -o json | jq .hits.total.value
+    ///   12
+    ///
+    /// Add --pretty to pretty-print JSON output.
+    #[command(verbatim_doc_comment)]
     Query(QueryArgs),
 
     /// Generate shell completions
