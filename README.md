@@ -144,7 +144,10 @@ The release profile is tuned for binary size (`opt-level = "z"`, LTO,
 CI runs `cargo fmt`, `cargo clippy` and `cargo test` on every push and PR.
 Pushing a `v*` tag builds release binaries for Linux (static musl) and macOS
 (both architectures) and attaches them, along with the man pages, to the
-GitHub release. A release can also be (re)built for an existing tag from the
+GitHub release; it then also bumps the formula in
+[iagus/homebrew-tap](https://github.com/iagus/homebrew-tap) to the new tag
+automatically (requires a `HOMEBREW_TAP_TOKEN` secret with write access to
+the tap repo). A release can be (re)built for an existing tag from the
 Actions tab via the "Release" workflow's manual dispatch.
 
 ## License

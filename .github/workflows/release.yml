@@ -72,3 +72,42 @@ jobs:
         with:
           tag_name: ${{ env.TAG }}
           files: dist/*.tar.gz*
+
+  # After a successful build, bump the Homebrew formula in iagus/homebrew-tap
+  # to this tag. Requires a HOMEBREW_TAP_TOKEN secret (PAT with write access
+  # to the tap repo). Idempotent: skips if the tap already points at this tag.
+  update-tap:
+    needs: build
+    runs-on: ubuntu-latest
+    env:
+      TAG: ${{ github.ref_type == 'tag' && github.ref_name || inputs.tag }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          repository: iagus/homebrew-tap
+          token: ${{ secrets.HOMEBREW_TAP_TOKEN }}
+          path: tap
+
+      - name: Bump formula to the released tag
+        run: |
+          set -euo pipefail
+          VERSION="${TAG#v}"
+          cd tap
+          if grep -q "refs/tags/${TAG}.tar.gz" Formula/elasticurl.rb; then
+            echo "Tap already at ${VERSION}; nothing to do."
+            exit 0
+          fi
+          URL="https://github.com/iagus/elasticurl/archive/refs/tags/${TAG}.tar.gz"
+          # Tag archives can take a moment to become available on GitHub.
+          for i in $(seq 1 6); do
+            SHA256=$(curl -fsSL "$URL" | shasum -a 256 | awk '{print $1}') && break
+            echo "Tarball not available yet, retrying in 15s..."
+            sleep 15
+          done
+          test -n "${SHA256:-}" || { echo "Could not download $URL"; exit 1; }
+          sed -i -E "s|^([[:space:]]*)url \"[^\"]+\"|\1url \"${URL}\"|" Formula/elasticurl.rb
+          sed -i -E "s|^([[:space:]]*)sha256 \"[0-9a-f]+\"|\1sha256 \"${SHA256}\"|" Formula/elasticurl.rb
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git commit -am "elasticurl ${VERSION}"
+          git push
