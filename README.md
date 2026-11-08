@@ -76,6 +76,12 @@ logs    2    1.0     {"msg":"world"}
 
 ## Installation
 
+### Homebrew
+
+```sh
+brew install iagus/tap/elasticurl
+```
+
 ### Prebuilt binaries
 
 Download a ready-made binary for Linux (x86_64/aarch64, statically linked with
